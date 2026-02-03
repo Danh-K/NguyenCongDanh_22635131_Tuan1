@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c4_architecture>
+  <project>
+    <name>Shopping Service</name>
+    <description>Hệ thống quản lý đơn hàng trực tuyến với các tính năng thanh toán, vận chuyển và thông báo</description>
+    <version>1.0.0</version>
+  </project>
+
+  <!-- LEVEL 1: SYSTEM CONTEXT -->
+  <level_1 name="System Context Diagram">
+    <description>Hiển thị Shopping Service và các hệ thống bên ngoài tương tác với nó</description>
+    
+    <system id="shopping-service">
+      <name>Shopping Service</name>
+      <type>Software System</type>
+      <description>Hệ thống quản lý đơn hàng</description>
+    </system>
+
+    <person id="customer">
+      <name>Customer</name>
+      <type>User</type>
+      <description>Khách hàng mua hàng online</description>
+      <relationship target="shopping-service">
+        <action>Tạo đơn hàng</action>
+        <action>Thanh toán</action>
+      </relationship>
+    </person>
+
+    <external_system id="payment-gateway">
+      <name>Payment Gateway</name>
+      <type>Third Party System</type>
+      <description>Dịch vụ xử lý thanh toán (Momo, Credit Card)</description>
+      <relationship target="shopping-service">
+        <action>Xác nhận thanh toán</action>
+      </relationship>
+    </external_system>
+
+    <external_system id="email-service">
+      <name>Email Service</name>
+      <type>Third Party System</type>
+      <description>Dịch vụ gửi email thông báo</description>
+      <relationship target="shopping-service">
+        <action>Gửi email xác nhận</action>
+      </relationship>
+    </external_system>
+
+    <external_system id="sms-service">
+      <name>SMS Service</name>
+      <type>Third Party System</type>
+      <description>Dịch vụ gửi SMS thông báo</description>
+      <relationship target="shopping-service">
+        <action>Gửi SMS cập nhật</action>
+      </relationship>
+    </external_system>
+
+    <external_system id="database">
+      <name>Database (MongoDB)</name>
+      <type>Data Store</type>
+      <description>Lưu trữ dữ liệu đơn hàng</description>
+      <relationship target="shopping-service">
+        <action>Lưu/Truy vấn dữ liệu</action>
+      </relationship>
+    </external_system>
+  </level_1>
+
+  <!-- LEVEL 2: CONTAINER DIAGRAM -->
+  <level_2 name="Container Diagram">
+    <description>Hiển thị các container chính bên trong Shopping Service</description>
+    
+    <system id="shopping-service-system">
+      <name>Shopping Service</name>
+      
+      <container id="web-api">
+        <name>Web API</name>
+        <type>Application</type>
+        <technology>Node.js, Express</technology>
+        <description>REST API xử lý requests từ clients</description>
+        <responsibility>
+          - Tiếp nhận HTTP requests từ khách hàng
+          - Route requests đến các controllers
+          - Trả về JSON responses
+        </responsibility>
+      </container>
+
+      <container id="business-logic">
+        <name>Business Logic Layer</name>
+        <type>Application</type>
+        <technology>Node.js</technology>
+        <description>Xử lý logic nghiệp vụ chính</description>
+        <responsibility>
+          - Tạo đơn hàng mới
+          - Xử lý thanh toán
+          - Quản lý vận chuyển
+          - Gửi thông báo
+        </responsibility>
+      </container>
+
+      <container id="data-access">
+        <name>Data Access Layer</name>
+        <type>Application</type>
+        <technology>Mongoose ODM</technology>
+        <description>Tương tác với cơ sở dữ liệu</description>
+        <responsibility>
+          - CRUD operations
+          - Query/Insert/Update orders
+        </responsibility>
+      </container>
+
+      <container id="database">
+        <name>Database</name>
+        <type>Data Store</type>
+        <technology>MongoDB</technology>
+        <description>Lưu trữ thông tin đơn hàng</description>
+        <responsibility>
+          - Lưu trữ dữ liệu đơn hàng
+          - Lưu trữ thông tin khách hàng
+        </responsibility>
+      </container>
+
+      <!-- Relationships giữa các containers -->
+      <relationship source="web-api" target="business-logic">
+        <description>Gọi service methods</description>
+      </relationship>
+      <relationship source="business-logic" target="data-access">
+        <description>Truy cập dữ liệu</description>
+      </relationship>
+      <relationship source="data-access" target="database">
+        <description>Persist/Query data</description>
+      </relationship>
+      <relationship source="business-logic" target="email-service">
+        <description>Gửi email notifications</description>
+      </relationship>
+      <relationship source="business-logic" target="sms-service">
+        <description>Gửi SMS notifications</description>
+      </relationship>
+      <relationship source="business-logic" target="payment-gateway">
+        <description>Xử lý thanh toán</description>
+      </relationship>
+    </system>
+
+    <external_system ref="payment-gateway"/>
+    <external_system ref="email-service"/>
+    <external_system ref="sms-service"/>
+  </level_2>
+
+  <!-- LEVEL 3: COMPONENT DIAGRAM -->
+  <level_3 name="Component Diagram - Business Logic Layer">
+    <description>Hiển thị các components bên trong Business Logic Layer</description>
+    
+    <layer id="business-logic-layer">
+      <name>Business Logic Layer</name>
+
+      <component id="order-controller">
+        <name>Order Controller</name>
+        <type>Controller</type>
+        <technology>Express Controller</technology>
+        <description>Xử lý HTTP requests liên quan đến đơn hàng</description>
+        <methods>
+          <method>createOrder()</method>
+          <method>payOrder()</method>
+        </methods>
+        <dependency target="order-service">Gọi createOrder, payOrder</dependency>
+      </component>
+
+      <component id="order-service">
+        <name>Order Service</name>
+        <type>Service</type>
+        <technology>Node.js Service</technology>
+        <description>Xử lý logic chính của đơn hàng</description>
+        <methods>
+          <method>createOrder() - Tạo đơn hàng mới</method>
+          <method>payOrder() - Xử lý thanh toán</method>
+        </methods>
+        <dependency target="order-model">Truy cập Order model</dependency>
+        <dependency target="shipping-strategy">Sử dụng strategy pattern</dependency>
+        <dependency target="payment-factory">Tạo payment objects</dependency>
+        <dependency target="order-subject">Gửi notifications</dependency>
+      </component>
+
+      <component id="order-model">
+        <name>Order Model</name>
+        <type>Data Model</type>
+        <technology>Mongoose Schema</technology>
+        <description>Định nghĩa cấu trúc dữ liệu Order</description>
+        <properties>
+          <property>id</property>
+          <property>items</property>
+          <property>totalPrice</property>
+          <property>shippingFee</property>
+          <property>status</property>
+        </properties>
+      </component>
+
+      <component id="shipping-strategy">
+        <name>Shipping Strategy</name>
+        <type>Pattern Implementation</type>
+        <technology>Strategy Pattern</technology>
+        <description>Xử lý các loại vận chuyển khác nhau</description>
+        <sub-components>
+          <sub-component>DomesticShipping - Vận chuyển nội địa</sub-component>
+          <sub-component>InternationalShipping - Vận chuyển quốc tế</sub-component>
+        </sub-components>
+        <responsibility>Tính phí vận chuyển dựa trên loại</responsibility>
+      </component>
+
+      <component id="payment-factory">
+        <name>Payment Factory</name>
+        <type>Factory Pattern</type>
+        <technology>Factory Pattern</technology>
+        <description>Tạo payment objects dựa trên loại thanh toán</description>
+        <methods>
+          <method>create(type) - Tạo payment instance phù hợp</method>
+        </methods>
+        <sub-components>
+          <sub-component>MomoPayment - Thanh toán Momo</sub-component>
+          <sub-component>CreditCardPayment - Thanh toán thẻ tín dụng</sub-component>
+          <sub-component>PaymentMethod - Base interface</sub-component>
+        </sub-components>
+      </component>
+
+      <component id="order-subject">
+        <name>Order Subject (Observer Pattern)</name>
+        <type>Pattern Implementation</type>
+        <technology>Observer Pattern</technology>
+        <description>Quản lý observers để gửi thông báo</description>
+        <methods>
+          <method>subscribe(observer) - Đăng ký observer</method>
+          <method>notify(order) - Gửi thông báo tới tất cả observers</method>
+        </methods>
+        <dependency target="email-observer">Gửi email thông báo</dependency>
+        <dependency target="sms-observer">Gửi SMS thông báo</dependency>
+      </component>
+
+      <component id="email-observer">
+        <name>Email Observer</name>
+        <type>Observer</type>
+        <technology>Node.js</technology>
+        <description>Gửi email thông báo khi có sự kiện</description>
+        <methods>
+          <method>update(order) - Gửi email</method>
+        </methods>
+      </component>
+
+      <component id="sms-observer">
+        <name>SMS Observer</name>
+        <type>Observer</type>
+        <technology>Node.js</technology>
+        <description>Gửi SMS thông báo khi có sự kiện</description>
+        <methods>
+          <method>update(order) - Gửi SMS</method>
+        </methods>
+      </component>
+
+      <!-- Relationships -->
+      <relationships>
+        <relationship source="order-controller" target="order-service"/>
+        <relationship source="order-service" target="order-model"/>
+        <relationship source="order-service" target="shipping-strategy"/>
+        <relationship source="order-service" target="payment-factory"/>
+        <relationship source="order-service" target="order-subject"/>
+        <relationship source="order-subject" target="email-observer"/>
+        <relationship source="order-subject" target="sms-observer"/>
+      </relationships>
+    </layer>
+  </level_3>
+
+  <!-- LEVEL 4: CODE DIAGRAM -->
+  <level_4 name="Code Diagram - Class Details">
+    <description>Hiển thị chi tiết các classes và methods</description>
+    
+    <!-- Order Service Class -->
+    <class id="class-order-service">
+      <name>OrderService</name>
+      <file>src/services/order.service.js</file>
+      <type>Service Class</type>
+      
+      <methods>
+        <method>
+          <name>createOrder(data)</name>
+          <access>public async</access>
+          <parameters>
+            <parameter name="data" type="object">Dữ liệu đơn hàng từ client</parameter>
+          </parameters>
+          <returns type="Promise">Order object</returns>
+          <logic>
+            1. Chọn Shipping Strategy dựa trên shippingType (INT hoặc Domestic)
+            2. Tính toán phí vận chuyển
+            3. Tạo Order mới trong database
+            4. Trả về order object
+          </logic>
+        </method>
+        
+        <method>
+          <name>payOrder(orderId, paymentType)</name>
+          <access>public async</access>
+          <parameters>
+            <parameter name="orderId" type="string">ID của đơn hàng</parameter>
+            <parameter name="paymentType" type="string">Loại thanh toán (MOMO, CARD)</parameter>
+          </parameters>
+          <returns type="Promise">Updated Order object</returns>
+          <logic>
+            1. Lấy Order từ database theo orderId
+            2. Tạo payment object qua PaymentFactory
+            3. Xử lý thanh toán
+            4. Cập nhật status thành PAID
+            5. Tạo OrderSubject
+            6. Đăng ký EmailObserver và SmsObserver
+            7. Gửi thông báo tới tất cả observers
+            8. Trả về updated order
+          </logic>
+        </method>
+      </methods>
+
+      <dependencies>
+        <dependency name="Order">../models/order</dependency>
+        <dependency name="PaymentFactory">./payment/payment-factory</dependency>
+        <dependency name="DomesticShipping">./shipping/domestic-shopping</dependency>
+        <dependency name="InternationalShipping">./shipping/international-shipping</dependency>
+        <dependency name="OrderSubject">./observer/order-subject</dependency>
+        <dependency name="EmailObserver">./observer/email-observer</dependency>
+        <dependency name="SmsObserver">./observer/sms-observer</dependency>
+      </dependencies>
+    </class>
+
+    <!-- Order Controller Class -->
+    <class id="class-order-controller">
+      <name>OrderController</name>
+      <file>src/controllers/order.controller.js</file>
+      <type>Controller Class</type>
+      
+      <methods>
+        <method>
+          <name>createOrder(req, res)</name>
+          <access>public async</access>
+          <parameters>
+            <parameter name="req" type="object">Express request object</parameter>
+            <parameter name="res" type="object">Express response object</parameter>
+          </parameters>
+          <logic>
+            1. Lấy dữ liệu từ req.body
+            2. Gọi orderService.createOrder()
+            3. Trả về JSON response
+          </logic>
+        </method>
+        
+        <method>
+          <name>payOrder(req, res)</name>
+          <access>public async</access>
+          <parameters>
+            <parameter name="req" type="object">Express request object (có id và paymentType)</parameter>
+            <parameter name="res" type="object">Express response object</parameter>
+          </parameters>
+          <logic>
+            1. Lấy orderId từ req.params.id
+            2. Lấy paymentType từ req.body
+            3. Gọi orderService.payOrder()
+            4. Trả về JSON response
+          </logic>
+        </method>
+      </methods>
+
+      <dependencies>
+        <dependency name="OrderService">../services/order.service</dependency>
+      </dependencies>
+    </class>
+
+    <!-- PaymentFactory Class -->
+    <class id="class-payment-factory">
+      <name>PaymentFactory</name>
+      <file>src/services/payment/payment-factory.js</file>
+      <type>Factory Class</type>
+      <pattern>Factory Pattern</pattern>
+      
+      <methods>
+        <method>
+          <name>create(type)</name>
+          <access>public static</access>
+          <parameters>
+            <parameter name="type" type="string">Loại thanh toán (MOMO, CARD)</parameter>
+          </parameters>
+          <returns type="PaymentMethod">Instance của payment method tương ứng</returns>
+          <logic>
+            if type === "MOMO" → return new MomoPayment()
+            if type === "CARD" → return new CreditCardPayment()
+            else → throw Error("Unsupported payment method")
+          </logic>
+        </method>
+      </methods>
+
+      <sub-classes>
+        <class>
+          <name>MomoPayment</name>
+          <file>src/services/payment/momo-payment.js</file>
+          <methods>
+            <method name="pay(amount)">Xử lý thanh toán Momo</method>
+          </methods>
+        </class>
+        
+        <class>
+          <name>CreditCardPayment</name>
+          <file>src/services/payment/credit-card-payment.js</file>
+          <methods>
+            <method name="pay(amount)">Xử lý thanh toán thẻ tín dụng</method>
+          </methods>
+        </class>
+
+        <class>
+          <name>PaymentMethod</name>
+          <file>src/services/payment/payment-method.js</file>
+          <type>Interface/Base Class</type>
+          <methods>
+            <method name="pay(amount)">Abstract method</method>
+          </methods>
+        </class>
+      </sub-classes>
+    </class>
+
+    <!-- OrderSubject Class (Observer Pattern) -->
+    <class id="class-order-subject">
+      <name>OrderSubject</name>
+      <file>src/services/observer/order-subject.js</file>
+      <type>Subject Class</type>
+      <pattern>Observer Pattern</pattern>
+      
+      <properties>
+        <property name="observers" type="array">Danh sách các observers</property>
+      </properties>
+
+      <methods>
+        <method>
+          <name>constructor()</name>
+          <logic>Khởi tạo mảng observers rỗng</logic>
+        </method>
+        
+        <method>
+          <name>subscribe(observer)</name>
+          <access>public</access>
+          <parameters>
+            <parameter name="observer" type="Observer">Observer cần đăng ký</parameter>
+          </parameters>
+          <logic>Thêm observer vào mảng observers</logic>
+        </method>
+        
+        <method>
+          <name>notify(order)</name>
+          <access>public</access>
+          <parameters>
+            <parameter name="order" type="Order">Dữ liệu đơn hàng</parameter>
+          </parameters>
+          <logic>
+            Lặp qua tất cả observers trong mảng
+            Gọi update(order) của mỗi observer
+          </logic>
+        </method>
+      </methods>
+    </class>
+
+    <!-- Email Observer Class -->
+    <class id="class-email-observer">
+      <name>EmailObserver</name>
+      <file>src/services/observer/email-observer.js</file>
+      <type>Observer Class</type>
+      <pattern>Observer Pattern</pattern>
+      
+      <methods>
+        <method>
+          <name>update(order)</name>
+          <access>public</access>
+          <parameters>
+            <parameter name="order" type="Order">Thông tin đơn hàng</parameter>
+          </parameters>
+          <logic>
+            Lấy email từ order
+            Gửi email thông báo thanh toán thành công
+            Log email sent
+          </logic>
+        </method>
+      </methods>
+    </class>
+
+    <!-- SMS Observer Class -->
+    <class id="class-sms-observer">
+      <name>SmsObserver</name>
+      <file>src/services/observer/sms-observer.js</file>
+      <type>Observer Class</type>
+      <pattern>Observer Pattern</pattern>
+      
+      <methods>
+        <method>
+          <name>update(order)</name>
+          <access>public</access>
+          <parameters>
+            <parameter name="order" type="Order">Thông tin đơn hàng</parameter>
+          </parameters>
+          <logic>
+            Lấy phone từ order
+            Gửi SMS thông báo thanh toán thành công
+            Log SMS sent
+          </logic>
+        </method>
+      </methods>
+    </class>
+
+    <!-- Shipping Strategy Classes -->
+    <class id="class-shopping-strategy">
+      <name>ShoppingStrategy</name>
+      <file>src/services/shipping/shopping-strategy.js</file>
+      <type>Interface/Base Class</type>
+      <pattern>Strategy Pattern</pattern>
+      
+      <methods>
+        <method>
+          <name>calculate()</name>
+          <access>public abstract</access>
+          <returns type="number">Phí vận chuyển</returns>
+        </method>
+      </methods>
+    </class>
+
+    <class id="class-domestic-shipping">
+      <name>DomesticShipping</name>
+      <file>src/services/shipping/domestic-shopping.js</file>
+      <type>Concrete Strategy Class</type>
+      <inherits>ShoppingStrategy</inherits>
+      
+      <methods>
+        <method>
+          <name>calculate()</name>
+          <access>public</access>
+          <returns type="number">Phí vận chuyển nội địa (thường là cố định hoặc tính theo khoảng cách)</returns>
+          <logic>Tính phí vận chuyển nội địa</logic>
+        </method>
+      </methods>
+    </class>
+
+    <class id="class-international-shipping">
+      <name>InternationalShipping</name>
+      <file>src/services/shipping/international-shipping.js</file>
+      <type>Concrete Strategy Class</type>
+      <inherits>ShoppingStrategy</inherits>
+      
+      <methods>
+        <method>
+          <name>calculate()</name>
+          <access>public</access>
+          <returns type="number">Phí vận chuyển quốc tế (thường cao hơn nội địa)</returns>
+          <logic>Tính phí vận chuyển quốc tế</logic>
+        </method>
+      </methods>
+    </class>
+
+    <!-- Order Model Class -->
+    <class id="class-order-model">
+      <name>Order</name>
+      <file>src/services/models/order.js</file>
+      <type>Mongoose Model</type>
+      
+      <properties>
+        <property name="items" type="array">Danh sách sản phẩm trong đơn hàng</property>
+        <property name="totalPrice" type="number">Giá tổng cộng</property>
+        <property name="shippingFee" type="number">Phí vận chuyển</property>
+        <property name="status" type="string">Trạng thái (PENDING, PAID, SHIPPED, DELIVERED)</property>
+        <property name="paymentType" type="string">Loại thanh toán (MOMO, CARD)</property>
+        <property name="shippingType" type="string">Loại vận chuyển (INT, Domestic)</property>
+        <property name="customerEmail" type="string">Email khách hàng</property>
+        <property name="customerPhone" type="string">Điện thoại khách hàng</property>
+        <property name="createdAt" type="date">Ngày tạo</property>
+        <property name="updatedAt" type="date">Ngày cập nhật</property>
+      </properties>
+    </class>
+
+    <!-- Design Patterns Usage -->
+    <design_patterns>
+      <pattern>
+        <name>Factory Pattern</name>
+        <used_in>PaymentFactory</used_in>
+        <purpose>Tạo các đối tượng payment khác nhau dựa trên loại thanh toán</purpose>
+        <benefit>Dễ dàng mở rộng thêm các loại thanh toán mới mà không cần thay đổi code cũ</benefit>
+      </pattern>
+
+      <pattern>
+        <name>Strategy Pattern</name>
+        <used_in>Shipping (DomesticShipping, InternationalShipping)</used_in>
+        <purpose>Encapsulate các cách tính phí vận chuyển khác nhau thành các strategy riêng biệt</purpose>
+        <benefit>Dễ dàng thay đổi hoặc thêm các strategy vận chuyển mới</benefit>
+      </pattern>
+
+      <pattern>
+        <name>Observer Pattern</name>
+        <used_in>OrderSubject, EmailObserver, SmsObserver</used_in>
+        <purpose>Thông báo tới nhiều observers (email, SMS) khi có sự kiện thanh toán</purpose>
+        <benefit>Loose coupling giữa Order Service và các hình thức thông báo, dễ thêm thêm observer</benefit>
+      </pattern>
+    </design_patterns>
+  </level_4>
+
+</c4_architecture>
