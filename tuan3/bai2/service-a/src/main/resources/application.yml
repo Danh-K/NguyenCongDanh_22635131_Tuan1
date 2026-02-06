@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      backendA:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+  retry:
+    instances:
+      backendA:
+        maxAttempts: 3
+        waitDuration: 1s
+  ratelimiter:
+    instances:
+      backendA:
+        limitForPeriod: 1 # Cho phép 1 request
+        limitRefreshPeriod: 5s # Trong mỗi 5 giây (cực thấp để dễ test)
+        timeoutDuration: 0s # Từ chối ngay nếu quá limit
+  bulkhead:
+    instances:
+      backendA:
+        maxConcurrentCalls: 1 # Chỉ cho phép 1 request đồng thời (để test)
+  timelimiter:
+    instances:
+      backendA:
+        timeoutDuration: 2s
