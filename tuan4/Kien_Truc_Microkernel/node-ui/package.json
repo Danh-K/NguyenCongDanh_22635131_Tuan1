@@ -1,0 +1,13 @@
+{
+  "name": "microkernel-node-ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simple Node.js UI for CRUD with Microkernel backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

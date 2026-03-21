@@ -1,0 +1,72 @@
+# Node
+*.node_modules/
+*.npm-debug.log*
+*.yarn-debug.log*
+*.yarn-error.log*
+*.pnpm-debug.log*
+*.lerna-debug.log*
+
+# Environment Variables
+*.env
+*.env.*
+!.env.example
+!.env.template
+
+# Logs
+*.logs/
+*.log
+npm-debug.log
+yarn-error.log
+test-results/
+
+# Operating System
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.project
+.classpath
+.settings/
+
+# Build & Dist
+*.dist/
+*.build/
+*.cache
+*.temp
+*.tmp/
+
+# Uploads & Storage
+*.uploads/
+*.storage/
+*.coverage/
+
+# Docker
+*.docker-compose.override.yml
+*.docker/
+
+# SSL / Keys / Secrets
+*.git-credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# JMeter
+*.jtl
+*.csv
+!flashsale_simple/src/helpers/*.csv 
+# Keep CSV data files if they are seed data, but ignore output csv results
+# Assuming result logs are .log or .jtl
+
+# Temporary scripts (Test scripts only relevant for local debugging)
+# Uncomment the lines below if you want to exclude the test scripts we created
+# test_mq.js
+# check_system.js

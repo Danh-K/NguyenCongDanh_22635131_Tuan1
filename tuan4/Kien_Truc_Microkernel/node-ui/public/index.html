@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Microkernel CRUD UI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Microkernel CRUD UI</h1>
+      <p>Node.js frontend goi API backend Spring Boot</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Kernel Plugins</h2>
+        <div class="actions">
+          <button type="button" id="load-plugins">Refresh Plugins</button>
+          <button type="button" data-plugin="content-plugin" class="activate-plugin">Activate Content</button>
+          <button type="button" data-plugin="user-plugin" class="activate-plugin">Activate User</button>
+          <button type="button" data-plugin="system-plugin" class="activate-plugin">Activate System</button>
+        </div>
+        <pre id="plugins-output"></pre>
+      </section>
+
+      <section class="card">
+        <h2>User CRUD</h2>
+        <form id="user-form">
+          <input type="text" id="user-id" placeholder="id (de trong khi tao)" />
+          <input type="text" id="user-username" placeholder="username" required />
+          <input type="email" id="user-email" placeholder="email" required />
+          <input type="text" id="user-role" placeholder="role" required />
+          <label><input type="checkbox" id="user-active" checked /> active</label>
+          <div class="actions">
+            <button type="button" id="create-user">Create</button>
+            <button type="button" id="update-user">Update</button>
+            <button type="button" id="delete-user">Delete</button>
+            <button type="button" id="load-users">Refresh List</button>
+          </div>
+        </form>
+        <pre id="users-output"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Content CRUD</h2>
+        <form id="content-form">
+          <input type="text" id="content-id" placeholder="id (de trong khi tao)" />
+          <input type="text" id="content-title" placeholder="title" required />
+          <input type="text" id="content-type" placeholder="type" required />
+          <input type="text" id="content-tags" placeholder="tags, separated by comma" />
+          <textarea id="content-body" placeholder="body" required></textarea>
+          <input type="text" id="content-actor" placeholder="actor for publish" value="system" />
+          <div class="actions">
+            <button type="button" id="create-content">Create</button>
+            <button type="button" id="update-content">Update</button>
+            <button type="button" id="publish-content">Publish</button>
+            <button type="button" id="delete-content">Delete</button>
+            <button type="button" id="load-contents">Refresh List</button>
+          </div>
+        </form>
+        <pre id="contents-output"></pre>
+      </section>
+
+      <section class="card">
+        <h2>System Settings (Upsert/List)</h2>
+        <form id="setting-form">
+          <input type="text" id="setting-key" placeholder="setting key" required />
+          <input type="text" id="setting-value" placeholder="setting value" required />
+          <input type="text" id="setting-description" placeholder="description" />
+          <div class="actions">
+            <button type="button" id="upsert-setting">Upsert</button>
+            <button type="button" id="load-settings">Refresh List</button>
+          </div>
+        </form>
+        <pre id="settings-output"></pre>
+      </section>
+
+      <section class="card">
+        <h2>Log</h2>
+        <pre id="log-output"></pre>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

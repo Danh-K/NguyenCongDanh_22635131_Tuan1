@@ -1,0 +1,11 @@
+{
+  "name": "demo-graphql-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.9.0",
+    "graphql": "^16.8.0"
+  }
+}
