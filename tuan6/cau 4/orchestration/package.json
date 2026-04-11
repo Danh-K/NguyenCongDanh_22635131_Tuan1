@@ -1,0 +1,21 @@
+{
+  "name": "cau-4-orchestration",
+  "version": "1.0.0",
+  "description": "Food ordering flow using orchestration with RabbitMQ",
+  "main": "index.js",
+  "scripts": {
+    "start:order": "node order-service/index.js",
+    "start:orchestrator": "node orchestrator/index.js",
+    "start:payment": "node payment-service/index.js",
+    "start:restaurant": "node restaurant-service/index.js",
+    "start:delivery": "node delievery/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.9",
+    "express": "^5.2.1",
+    "uuid": "^13.0.0"
+  }
+}

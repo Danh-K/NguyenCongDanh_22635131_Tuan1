@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food LAN App</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Food App - LAN Demo</h1>
+      <p class="hint">Frontend gọi 4 service qua IP LAN theo config.</p>
+
+      <section class="card">
+        <h2>Tao don hang</h2>
+        <form id="order-form">
+          <label>
+            Ten khach
+            <input id="customerName" required />
+          </label>
+          <label>
+            Dia chi giao hang
+            <input id="address" required />
+          </label>
+          <label>
+            Mon an (phan cach boi dau phay)
+            <input id="items" value="Com ga,Tra dao" required />
+          </label>
+          <label>
+            Tong tien
+            <input id="total" type="number" min="0" value="65000" required />
+          </label>
+          <button type="submit">Dat mon va chay full flow</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Trang thai xu ly</h2>
+        <pre id="log"></pre>
+      </section>
+    </main>
+
+    <script src="/config.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

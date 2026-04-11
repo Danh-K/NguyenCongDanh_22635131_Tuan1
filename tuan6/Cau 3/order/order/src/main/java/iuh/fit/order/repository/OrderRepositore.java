@@ -1,0 +1,6 @@
+package iuh.fit.order.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface OrderRepository extends MongoRepository<iuh.fit.order.entity.Order, String> {
+}
